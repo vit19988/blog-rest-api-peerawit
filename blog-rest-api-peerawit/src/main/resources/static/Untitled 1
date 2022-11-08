@@ -1,0 +1,9 @@
+JWT
+1. Adding JWT Dependency
+2. Create JwtAuthenticationEntryPoint implements AuthenticationEntryPoint
+3. Add jwt properties in application.properties file
+4. Create jwtTokenProvide
+5. JwtAuthenticationFilter
+6. Create JWTAuthResponseDTO
+7. Configure JWT in Spring Security Configuration
+8. Change login/signin API to return token to client
