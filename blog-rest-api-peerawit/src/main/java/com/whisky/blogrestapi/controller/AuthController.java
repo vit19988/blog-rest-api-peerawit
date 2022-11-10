@@ -24,12 +24,15 @@ import com.whisky.blogrestapi.repository.RoleRepository;
 import com.whisky.blogrestapi.repository.UserRepository;
 import com.whisky.blogrestapi.security.JwtTokenProvider;
 
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/auth")
-@Slf4j
-public class LoginController {
+@RequestMapping("/api/v1/auth")
+@Tag(name = "Authorization Controller")
+public class AuthController {
 
 	@Autowired
 	private AuthenticationProvider customUserAuthProvider;
@@ -47,9 +50,9 @@ public class LoginController {
 	private JwtTokenProvider jwtTokenProvider;
 
 	@PostMapping("/signin")
+	@Operation(summary = "REST API to Login")
 	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDto logingDto) {
-		System.out.println("----------------------");
-
+		
 		Authentication authentication = customUserAuthProvider.authenticate(
 				new UsernamePasswordAuthenticationToken(logingDto.getUsernameOrEmail(),
 						logingDto.getPassword()));
@@ -63,10 +66,11 @@ public class LoginController {
 	}
 
 	@PostMapping("/signup")
+	@Operation(summary = "REST API to Register")
 	public ResponseEntity<String> registerUser(@RequestBody SignupDto signupDto) {
 		// add check for username exists in a DB
 		if (userRepository.existsByEmailOrUsername(signupDto.getEmail(), signupDto.getUsername())) {
-			log.warn("------in thi----");
+
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Username or email is already taken!");
 		}

@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.whisky.blogrestapi.payload.UnAuthorizedResponse;
+import com.whisky.blogrestapi.utils.AuthResponseUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -65,24 +66,27 @@ public class JwtTokenProvider {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (SignatureException ex) {
-			setResponseDataToUnAuthorizationBean("Invalid JWT signature", request);
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("Invalid JWT signature", request,unAuthorizedResponse);
+			throw new RuntimeException();
 		} catch (MalformedJwtException ex) {
-			setResponseDataToUnAuthorizationBean("Invalid JWT token", request);
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("Invalid JWT Token", request,unAuthorizedResponse);
+			throw new RuntimeException();
 		} catch (ExpiredJwtException ex) {
-			setResponseDataToUnAuthorizationBean("Expired JWT Token", request);
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("Expired JWT Token", request,unAuthorizedResponse);
+			throw new RuntimeException();
 		} catch (UnsupportedJwtException ex) {
-			setResponseDataToUnAuthorizationBean("Unsuppported JWT Token", request);
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("Unsuppported JWT Token", request,unAuthorizedResponse);
+			throw new RuntimeException();
 		} catch (IllegalArgumentException ex) {
-			setResponseDataToUnAuthorizationBean("JWT Claim string is empty", request);
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("JWT Claim string is empty", request,unAuthorizedResponse);
+			throw new RuntimeException();
+		}catch(RuntimeException ex) {
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("XXXX", request,unAuthorizedResponse);
+			throw new RuntimeException();
+
 		}
-		return false;
+
 	}
 
-	private void setResponseDataToUnAuthorizationBean(String message, HttpServletRequest request) {
-		unAuthorizedResponse.setTimestamp(new Date());
-		unAuthorizedResponse.setMessage(message);
-		unAuthorizedResponse.setDetails("uri=" + request.getRequestURI());
-		throw new RuntimeException();
-	}
 
 }

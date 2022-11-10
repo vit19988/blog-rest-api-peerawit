@@ -16,7 +16,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.whisky.blogrestapi.config.CustomUserDetailsService;
+import com.whisky.blogrestapi.payload.UnAuthorizedResponse;
 import com.whisky.blogrestapi.security.JwtTokenProvider;
+import com.whisky.blogrestapi.utils.AuthResponseUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired
+	private UnAuthorizedResponse unAuthorizedResponse;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -53,6 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				// set Spring security
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
+		}else {
+			AuthResponseUtil.setResponseDataToUnAuthorizationBean("JWT token not found", request, unAuthorizedResponse);
 		}
 		
 		filterChain.doFilter(request, response);

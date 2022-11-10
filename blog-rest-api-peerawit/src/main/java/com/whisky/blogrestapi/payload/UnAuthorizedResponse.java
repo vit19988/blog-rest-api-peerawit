@@ -4,10 +4,14 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Component
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class UnAuthorizedResponse {
 	
 	private Date timestamp;

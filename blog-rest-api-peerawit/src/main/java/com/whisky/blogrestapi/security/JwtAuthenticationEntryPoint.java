@@ -21,7 +21,6 @@ import com.whisky.blogrestapi.payload.UnAuthorizedResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Autowired
@@ -30,9 +29,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		
-		
-		System.out.println("uuuu----"+unAuthorizedResponse);
+
 		
 		ObjectWriter ow = new ObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(unAuthorizedResponse);

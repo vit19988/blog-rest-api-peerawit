@@ -19,14 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.whisky.blogrestapi.payload.CommentDto;
 import com.whisky.blogrestapi.service.CommentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1")
+@Tag(name = "Comment Controller")
 public class CommentController {
 
 	@Autowired
 	private CommentService commentService;
 
 	@PostMapping("/posts/{postId}/comments")
+	@Operation(summary = "Create Comment")
 	public ResponseEntity<CommentDto> createComment(
 			@PathVariable long postId,
 			@RequestBody @Valid CommentDto commentDto) {
@@ -38,13 +43,15 @@ public class CommentController {
 	}
 
 	@GetMapping("/posts/{postId}/comments")
+	@Operation(summary = "Get All Comments By Post ID")
 	public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(@PathVariable long postId) {
 		List<CommentDto> listOfCommentDto = commentService.getAllCommentByPostId(postId);
 		return ResponseEntity.ok(listOfCommentDto);
 	}
 
 	@GetMapping("/posts/{postId}/comments/{commentId}")
-	public ResponseEntity<CommentDto> getAllCommentsByPostId(
+	@Operation(summary = "Get Comment By ID")
+	public ResponseEntity<CommentDto> getAllCommentsByPostIdAndCommentId(
 			@PathVariable long postId,
 			@PathVariable long commentId) {
 		CommentDto returnComment = commentService.getCommentById(postId, commentId);
@@ -52,6 +59,7 @@ public class CommentController {
 	}
 	
 	@PutMapping("/posts/{postId}/comments/{commentId}")
+	@Operation(summary = "Update Comment By ID")
 	public ResponseEntity<CommentDto> getAllCommentsByPostId(
 			@PathVariable long postId,
 			@PathVariable long commentId,
@@ -61,6 +69,7 @@ public class CommentController {
 	}
 	
 	@DeleteMapping("/posts/{postId}/comments/{commentId}")
+	@Operation(summary = "Delete Comment By ID")
 	public ResponseEntity<String> deleteCommentById(
 			@PathVariable long postId,
 			@PathVariable long commentId) {

@@ -11,39 +11,47 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.whisky.blogrestapi.filter.JwtAuthenticationFilter;
 import com.whisky.blogrestapi.security.JwtAuthenticationEntryPoint;
+import com.whisky.blogrestapi.security.MyAccessDeniedHandler;
 
 @Configuration
 public class SecurityConfig {
-	
-	
+
 	@Autowired
 	private JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter; 
+	private MyAccessDeniedHandler myAccessDeniedHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-		http.csrf().disable()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and().addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-		.authorizeRequests()
-		.antMatchers(HttpMethod.POST,"/api/post/**","/api/comment/**").hasRole("ADMIN")
-		.antMatchers(HttpMethod.PUT,"/api/post/**","/api/comment/**").hasRole("ADMIN")
-		.antMatchers(HttpMethod.DELETE,"/api/post/**","/api/comment/**").hasRole("ADMIN")
-		.antMatchers("/api/auth/**").permitAll()
-		.anyRequest().authenticated()
-		.and().exceptionHandling()
-		.authenticationEntryPoint(authenticationEntryPoint);
+		http.csrf().disable().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.addFilterBefore(jwtAuthenticationFilter,
+						UsernamePasswordAuthenticationFilter.class)
+				.authorizeRequests()
+				.antMatchers(HttpMethod.POST, "/api/v1/posts/**", "/api/v2/posts/**",
+						"/api/comments/**")
+				.hasRole("ADMIN")
+				.antMatchers(HttpMethod.PUT, "/api/v1/posts/**", "/api/v2/posts/**",
+						"/api/comments/**")
+				.hasRole("ADMIN")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/posts/**", "/api/v2/posts/**",
+						"/api/comments/**")
+				.hasRole("ADMIN")
+				.antMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+				.anyRequest().authenticated().and().exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint)
+				.accessDeniedHandler(myAccessDeniedHandler);
+				
 
 		return http.build();
 
@@ -59,9 +67,6 @@ public class SecurityConfig {
 //
 //	}
 
-
-	
-
 	private List<GrantedAuthority> getGrantedAuthorities(String role) {
 		GrantedAuthority authority = new SimpleGrantedAuthority(role);
 		List<GrantedAuthority> authorities = new ArrayList<>();
@@ -69,5 +74,4 @@ public class SecurityConfig {
 		return authorities;
 	}
 
-	
 }

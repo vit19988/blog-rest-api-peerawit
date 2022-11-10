@@ -2,19 +2,15 @@ package com.whisky.blogrestapi.payload;
 
 import java.util.List;
 
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-
 @Data
-public class PostDto {
+public class PostDtoV2 {
 	
-	@Schema(hidden=true)
 	private Long id;
 	
 	//title should not be null or empty
@@ -30,7 +26,6 @@ public class PostDto {
 	@NotEmpty
 	@NotNull
 	@Size(min = 10 ,message = "Post description should have at least 10 characters")
-	@Schema(example = "string")
 	private String description;
 	
 	
@@ -38,7 +33,9 @@ public class PostDto {
 	@NotEmpty
 	private String content;
 	
-	@Schema(hidden=true)
 	private List<CommentDto> comments;
+	
+	private List<String> tags;
 
 }
+
